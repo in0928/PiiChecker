@@ -14,32 +14,28 @@ if __name__=="__main__":
 
     email_regex = rc.email_regex()
     phone_regex = rc.phone_regex()
-    emails = []
-    phones = []
 
-    match = False
-    row = {}
     result = []
     count = 0
     while count < len(msgs):
+        match = False
+        row = {}
         email = re.findall(email_regex, msgs[count])
         phone = re.findall(phone_regex, msgs[count])
         if len(email) > 0:
-            row["emails"] = email
+            row["Emails"] = email
             match = True
         if len(phone) > 0:
-            phones.append(phone)
-            row["phones"] = phone
+            row["Phones"] = phone
             match = True
 
         if match == True:
-            row["roomId"] = list(filtered_df["ルームID[msg.roomId]"])[count]
-            row["msgId"] = list(filtered_df["メッセージID[msg._id]"])[count]
-            row["msg"] = msgs[count]
-        if not row:
+            row["RoomId"] = list(filtered_df["ルームID[msg.roomId]"])[count]
+            row["MsgId"] = list(filtered_df["メッセージID[msg._id]"])[count]
+            row["Msg"] = msgs[count]
             result.append(row)
+
         count += 1
-    # print(emails)
-    # print(phones)
+
     output_df = pd.DataFrame(result)
     print(output_df)
