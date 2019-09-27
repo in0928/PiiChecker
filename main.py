@@ -9,7 +9,7 @@ if __name__=="__main__":
     reader = CsvReader(path)
     filtered_df = CsvReader.filtered_df(reader.df)
 
-    msgs = list(filtered_df["本文[msg.body]"]) #TODO: something is wrong with the index, maybe should use get_column
+    msgs = list(filtered_df["本文[msg.body]"])
     print(msgs)
 
     email_regex = rc.email_regex()
