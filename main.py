@@ -11,7 +11,7 @@ if __name__=="__main__":
     pd.set_option('display.width', 1000)
 
     # path = "C:\\Users\\Ko.In\\Desktop\\testdata.csv"
-    path = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\callcenter_data201809.csv"
+    path = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\callcenter_data (201809).csv"
     reader = CsvReader(path)
     filtered_df = CsvReader.filtered_df(reader.df)
 

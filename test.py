@@ -8,8 +8,3 @@ for sent in doc.sents:
     while count < 15:
         print(sent[count].i, sent[count].orth_,sent[count]._.pos_detail)
         count += 1
-
-a = ["a"]
-b = ["b","c"]
-a.append(b)
-print(a)
