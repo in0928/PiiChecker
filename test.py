@@ -1,7 +1,15 @@
 import spacy
+import neologdn
+
 nlp = spacy.load('ja_ginza_nopn')
-doc = nlp('依存構造解析の実験を行っています。')
+doc = nlp('私は、東京都大阪市浪速区なんば5-1-3-1502だよ')
+count = 0
 for sent in doc.sents:
-    for token in sent:
-        print(token.i, token.orth_, token.lemma_, token.pos_, token.tag_, token.dep_, token.head.i)
-    print('EOS')
+    while count < 15:
+        print(sent[count].i, sent[count].orth_,sent[count]._.pos_detail)
+        count += 1
+
+a = ["a"]
+b = ["b","c"]
+a.append(b)
+print(a)

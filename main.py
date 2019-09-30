@@ -5,12 +5,17 @@ import re
 import pandas as pd
 
 if __name__=="__main__":
-    path = "C:\\Users\\Ko.In\\Desktop\\testdata.csv"
+    # pandas display option to show full df
+    pd.set_option('display.max_rows', 500)
+    pd.set_option('display.max_columns', 500)
+    pd.set_option('display.width', 1000)
+
+    # path = "C:\\Users\\Ko.In\\Desktop\\testdata.csv"
+    path = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\callcenter_data201809.csv"
     reader = CsvReader(path)
     filtered_df = CsvReader.filtered_df(reader.df)
 
     msgs = list(filtered_df["本文[msg.body]"])
-    print(msgs)
 
     email_regex = rc.email_regex()
     phone_regex = rc.phone_regex()
@@ -23,10 +28,21 @@ if __name__=="__main__":
         email = re.findall(email_regex, msgs[count])
         phone = re.findall(phone_regex, msgs[count])
         if len(email) > 0:
-            row["Emails"] = email
+            row["Email"] = email
             match = True
         if len(phone) > 0:
-            row["Phones"] = phone
+            row["Phone"] = phone
+            match = True
+
+        name = tc.checkName(msgs[count])
+        if len(name) > 0:
+            row["Name"] = name
+            match = True
+
+        address = tc.checkAddress(msgs[count])
+        if len(address) > 0:
+            print(address)
+            row["Address"] = address
             match = True
 
         if match == True:
