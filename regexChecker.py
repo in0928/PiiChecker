@@ -29,7 +29,7 @@ class RegexChecker:
         統一番号用電話番号	0570-DEF-XXX	10
         :return:
         """
-        pt = "\d{2,5}-?\d{1,4}-?\d{3,4}"
+        pt = "0\d{1,4}-?\d{1,4}-?\d{4,5}"
         phone_regex = re.compile(pt)
         return phone_regex
 
