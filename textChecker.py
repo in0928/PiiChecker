@@ -12,6 +12,10 @@ class TextChecker:
         # nlp_sentence = nlp(nlp_sentence)
         count = 0
         while count < len(nlp_sentence):
+            if nlp_sentence[count].is_stop:
+                # print("Found stop_word:" + str(nlp_sentence[count]))
+                count += 1
+                continue
             if nlp_sentence[count]._.pos_detail == "名詞,固有名詞,人名,姓":
                 # to detect full-name
                 if count < len(nlp_sentence)-1 and nlp_sentence[count+1]._.pos_detail == "名詞,固有名詞,人名,名":
@@ -31,6 +35,10 @@ class TextChecker:
         # nlp_sentence = nlp(nlp_sentence)
         count = 0
         while count < len(nlp_sentence):
+            if nlp_sentence[count].is_stop:
+                # print("Found stop_word:" + str(nlp_sentence[count]))
+                count += 1
+                continue
             if nlp_sentence[count]._.pos_detail == "名詞,固有名詞,地名,一般":
                 # detect all address entity
                 end_index = TextChecker.target_ends_at(nlp_sentence[count+1:], "名詞,固有名詞,地名,一般") + count
@@ -71,14 +79,10 @@ class TextChecker:
         while count < len(tokens):
             if tokens[count]._.pos_detail == "名詞,数詞,*,*":
                 count += 2
-                # print("if" + str(count))
                 continue
             elif count > 0 and tokens[count-3]._.pos_detail == "補助記号,一般,*,*":
-                # print("elif")
-                # print(tokens[count-3:])
                 return count-1
             else:
-                # print("else")
                 return count
         return count
 
@@ -103,9 +107,14 @@ if __name__=="__main__":
     text = "お友達の紹介で、女子２人で三時のティータイムに利用しました。2人用のソファに並んでいただきま〜す v(^^)v なかよし（笑" \
            "最後に出された,モンブランのｹｰｷ。" \
            "やばっっっ！！これはうまーーーい!!" \
-           "とってもＤｅｌｉｃｉｏｕｓで、サービスもGoodでした😀" \
+           "とってもＤｅｌｉｃｉｏｕｓで、サービスもGoodでしたAmazon😀" \
            "これで2,500円はとってもお得です☆" \
            "http://hogehoge.nantoka.blog/example/link.html"
-    normalized_text = neologdn.normalize(text)
-    text_no_url = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', normalized_text)
-    print(text_no_url)
+
+    test = "Amazon"
+    nlp = spacy.load('ja_ginza_nopn', disable=["tagger", "parser", "ner", "textcat"])
+    nlp_sentence = nlp(test)
+    for i in nlp_sentence:
+        print(i)
+        print(i.is_stop)
+

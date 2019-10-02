@@ -1,20 +1,3 @@
-import codecs
-import re
-
-import chardet
-import emoji
-import pandas as pd
-import string
-import neologdn
-
-class CsvReader:
-
-    def __init__(self, path, encode):
-        self.df = self.load_file(path, encode)
-
-
-    @staticmethod
-    def load_file(path, encode):
         # col_names = ["メッセージID[msg._id]","送信時刻[msg.dateStr]","ルームID[msg.roomId]",
         #              "送信者ID[msg.userId]","システムメッセージ[msg.system]", "本文[msg.body]",
         #              "メッセージタイプ[msg.type]","メッセージデータ[msg.data]","メッセージに付随するデータ[msg.extra]",
@@ -49,45 +32,3 @@ class CsvReader:
         #              "オペレーター対応時間[room.descObj.operatorWorkingTime]","最終発言時刻[room.descObj.lastMsgTime]","分類区分1(ラベル)[room.tags.66]",
         #              "分類区分2(ラベル)[room.tags.67]","分類区分3(ラベル)[room.tags.68]","アクセス元IP[room.tags.71]",
         #              "グループ名[room.groupName]","最初に担当したオペレーター名[room.tag14UserName]","最初にメッセージを送信したオペレーター名[room.tag16UserName]"]
-        with codecs.open(path, "r", encode, "ignore") as file:
-            df = pd.read_table(file, delimiter="\t")
-        return df
-
-    @staticmethod
-    def filtered_df(df):
-        new_df = df[~df["送信者ID[msg.userId]"].str.contains("dummy-", na=False)]
-        return new_df
-
-    @staticmethod
-    def find_encoding(filename):
-        r_file = open(filename, 'rb').read()
-        result = chardet.detect(r_file)
-        charenc = result['encoding']
-        return charenc
-
-    @staticmethod
-    def pre_process(input_text):
-        normalized_text = neologdn.normalize(input_text)
-        text_no_url = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', normalized_text)
-        text_no_emoji = ''.join(['' if c in emoji.UNICODE_EMOJI else c for c in text_no_url])
-        tmp = re.sub(r'[!-/:-@[-`{-~]', r' ', text_no_emoji)
-        text_removed_symbol = re.sub(u'[■-♯]', ' ', tmp)
-        return text_removed_symbol
-
-
-if __name__=="__main__":
-    # path = "C:\\Users\\Ko.In\\Desktop\\testdata.csv"
-    path = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\callcenter_data (201809).csv"
-    # enc = CsvReader.find_encoding(path)
-    # reader = CsvReader(path)
-    # print(reader.df)
-    # filtered = reader.filtered_df(reader.df)
-    # print(filtered)
-
-    text = "お友達の紹介で、女子２人で三時のティータイムに利用しました。2人用のソファに並んでいただきま〜す v(^^)v なかよし（笑" \
-           "最後に出された,モンブランのｹｰｷ。" \
-           "やばっっっ！！これはうまーーーい!!" \
-           "とってもＤｅｌｉｃｉｏｕｓで、サービスもGoodでした😀" \
-           "これで2,500円はとってもお得です☆" \
-           "http://hogehoge.nantoka.blog/example/link.html"
-    print(CsvReader.pre_process(text))
