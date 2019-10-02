@@ -13,15 +13,16 @@ if __name__=="__main__":
     pd.set_option('display.max_rows', 500)
     pd.set_option('display.max_columns', 500)
     pd.set_option('display.width', 1000)
+    #TODO: add length option to show all
 
     nlp = spacy.load('ja_ginza_nopn', disable=["tagger", "parser", "ner", "textcat"])
-    stop_file = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\StopKey_v01.csv"
+    stop_file = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\StopKey_pii.csv"
     add_stop_words(read_to_list(stop_file, find_encoding(stop_file)), nlp)
 
     file = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\callcenter_data (201809).csv"
     filtered_df = filtered_df(read_to_df(file, find_encoding(file)))
 
-    raw_msgs = list(filtered_df["本文[msg.body]"])[:1800]
+    raw_msgs = list(filtered_df["本文[msg.body]"])
     new_msgs = pre_process(raw_msgs)
     email_regex = rc.email_regex()
     phone_regex = rc.phone_regex()
