@@ -80,9 +80,6 @@ class TextChecker:
             else:
                 return count
         return count
-            else:
-                return count
-        return count
 
 
 if __name__=="__main__":
