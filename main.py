@@ -41,7 +41,7 @@ if __name__=="__main__":
         email = re.findall(email_regex, str(msg))
         if len(email) > 0:
             print("Found email at " + str(count) + ": " + ",".join([str(n) for n in email]))
-            row["Email"] = email
+            row["Email"] = "".join([str(n) for n in email])
             match = True
 
         phone = re.findall(phone_regex, str(msg))
@@ -57,23 +57,23 @@ if __name__=="__main__":
             index += 1
         if len(phone) > 0:
             print("Found phone at " + str(count) + ": " + ",".join([str(n) for n in phone]))
-            row["Phone"] = phone
+            row["Phone"] = "".join([str(n) for n in phone])
             match = True
 
         name = tc.checkName(msg)
         if len(name) > 0:
             print("Found name at " + str(count) + ": " + ",".join([str(n) for n in name]))
-            row["Name"] = name
+            row["Name"] = "".join([str(n) for n in name])
             match = True
 
         location_address = tc.checkLocation(msg)
         if len(location_address[0]) > 0:
             print("Found location at " + str(count) + ": " + ",".join([str(n) for n in location_address[0]]))
-            row["Location"] = location_address[0]
+            row["Location"] = "".join([str(n) for n in location_address[0]])
             match = True
         if len(location_address[1]) > 0:
             print("Found address at " + str(count) + ": " + ",".join([str(n) for n in location_address[1]]))
-            row["Address"] = location_address[1]
+            row["Address"] = "".join([str(n) for n in location_address[1]])
             match = True
 
 
