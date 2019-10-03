@@ -10,10 +10,10 @@ if __name__=="__main__":
     start_time = time.time()
 
     # pandas display option to show full df
-    pd.set_option('display.max_rows', 500)
+    pd.set_option('display.max_rows', 1000)
     pd.set_option('display.max_columns', 500)
+    pd.set_option('display.max_colwidth', 200)
     pd.set_option('display.width', 1000)
-    #TODO: add length option to show all
 
     nlp = spacy.load('ja_ginza_nopn', disable=["tagger", "parser", "ner", "textcat"])
     stop_file = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\StopKey_pii.csv"
@@ -39,16 +39,22 @@ if __name__=="__main__":
         row = {}
 
         email = re.findall(email_regex, str(msg))
-        phone = re.findall(phone_regex, str(msg))
         if len(email) > 0:
             print("Found email at " + str(count) + ": " + ",".join([str(n) for n in email]))
             row["Email"] = email
             match = True
 
+        phone = re.findall(phone_regex, str(msg))
         for p in phone:
+            index = 0
             p = str(p)
-            if len(p) < 10 or len(p) > 11: #TODO: think about hyphen
+            if p.__contains__("-"):
+                print("Removing '-' for phone number")
+                p = p.replace("-", "")
+                phone[index] = p
+            if len(p) < 10 or len(p) > 11:
                 phone.remove(p)
+            index += 1
         if len(phone) > 0:
             print("Found phone at " + str(count) + ": " + ",".join([str(n) for n in phone]))
             row["Phone"] = phone
@@ -60,10 +66,14 @@ if __name__=="__main__":
             row["Name"] = name
             match = True
 
-        address = tc.checkAddress(msg)
-        if len(address) > 0:
-            print("Found address at " + str(count) + ": " + ",".join([str(n) for n in address]))
-            row["Address"] = address
+        location_address = tc.checkLocation(msg)
+        if len(location_address[0]) > 0:
+            print("Found location at " + str(count) + ": " + ",".join([str(n) for n in location_address[0]]))
+            row["Location"] = location_address[0]
+            match = True
+        if len(location_address[1]) > 0:
+            print("Found address at " + str(count) + ": " + ",".join([str(n) for n in location_address[1]]))
+            row["Address"] = location_address[1]
             match = True
 
 
@@ -76,6 +86,19 @@ if __name__=="__main__":
 
     output_df = pd.DataFrame(result)
     print(output_df)
+
+    file_ok = False
+
+    # file_format = str(input("Choose file format 1)csv; 2)xlsx; 3)both;"))
+
+    while not file_ok:
+        output_file = input("Type in a file name (with no file extension): ")
+        if os.path.exists(output_file + ".csv") or os.path.exists(output_file + ".xlsx"):
+            print(output_file + "file already exists")
+        else:
+            file_ok = True
+            write_to_csv(output_df, output_file + ".csv")
+            write_to_xlsx(output_df, output_file + ".xlsx")
     if error:
         print(error)
 

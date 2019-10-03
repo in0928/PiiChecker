@@ -8,8 +8,6 @@ class TextChecker:
     @staticmethod
     def checkName(nlp_sentence):
         name = []
-        # nlp = spacy.load('ja_ginza_nopn', disable=["tagger", "parser", "ner", "textcat"])
-        # nlp_sentence = nlp(nlp_sentence)
         count = 0
         while count < len(nlp_sentence):
             if nlp_sentence[count].is_stop:
@@ -29,10 +27,9 @@ class TextChecker:
         return name
 
     @staticmethod
-    def checkAddress(nlp_sentence):
+    def checkLocation(nlp_sentence):
+        location = []
         address = []
-        # nlp = spacy.load('ja_ginza_nopn', disable=["tagger", "parser", "ner", "textcat"])
-        # nlp_sentence = nlp(nlp_sentence)
         count = 0
         while count < len(nlp_sentence):
             if nlp_sentence[count].is_stop:
@@ -40,21 +37,32 @@ class TextChecker:
                 count += 1
                 continue
             if nlp_sentence[count]._.pos_detail == "名詞,固有名詞,地名,一般":
-                # detect all address entity
+                # detect all location entity
                 end_index = TextChecker.target_ends_at(nlp_sentence[count+1:], "名詞,固有名詞,地名,一般") + count
-                address.append(nlp_sentence[count: end_index+1])
-                # following address entities exist
+                location.append(nlp_sentence[count: end_index+1])
+                # following location entities exist
                 if end_index > count:
                     count = end_index
 
                 number_end_index = TextChecker.number_ends_at(nlp_sentence[count+1:]) + count
                 # number entities exist
                 if number_end_index > count:
+                    # location.append(nlp_sentence[end_index+1: number_end_index+1])
                     address.append(nlp_sentence[end_index+1: number_end_index+1])
 
             count += 1
+        return location, address
 
-        return address
+
+    @staticmethod
+    def number_ends_at(tokens):
+        count = 0
+        while count < len(tokens):
+            if tokens[count]._.pos_detail == "名詞,数詞,*,*":
+                count += 2
+                continue
+            elif count > 0 and tokens[count-3]._.pos_detail == "補助記号,一般,*,*": #TODO: amazon 3000en
+                return count-1
 
     @staticmethod
     def target_ends_at(tokens, target):
@@ -72,16 +80,6 @@ class TextChecker:
             else:
                 return count
         return count
-
-    @staticmethod
-    def number_ends_at(tokens):
-        count = 0
-        while count < len(tokens):
-            if tokens[count]._.pos_detail == "名詞,数詞,*,*":
-                count += 2
-                continue
-            elif count > 0 and tokens[count-3]._.pos_detail == "補助記号,一般,*,*":
-                return count-1
             else:
                 return count
         return count

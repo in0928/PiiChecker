@@ -1,4 +1,5 @@
 import codecs
+import os
 import re
 import csv
 import chardet
@@ -52,11 +53,22 @@ def add_stop_words(customize_stop_words, nlp):
         nlp.vocab[w[0]].is_stop = True
 
 
+def write_to_csv(df, output_filename):
+    df.to_csv(output_filename, sep="\t")
+    print("Successfully wrote df to csv file")
+
+
+def write_to_xlsx(df, output_filename):
+    with pd.ExcelWriter(output_filename) as writer:
+        df.to_excel(writer, sheet_name=output_filename)
+    print("Successfully wrote df to excel file")
+
+
 if __name__=="__main__":
     stop_keys = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\StopKey_v01.csv"
-    # path = "C:\\Users\\Ko.In\\Desktop\\testdata.csv"
-    path = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\callcenter_data (201809).csv"
-    df = read_to_df(path, find_encoding(path))
+    # file_path = "C:\\Users\\Ko.In\\Desktop\\testdata.csv"
+    file_path = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\callcenter_data (201809).csv"
+    df = read_to_df(file_path, find_encoding(file_path))
     df = filtered_df(df)
 
     # text = "お友達の紹介で、女子２人で三時のティータイムに利用しました。2人用のソファに並んでいただきま〜す v(^^)v なかよし（笑" \

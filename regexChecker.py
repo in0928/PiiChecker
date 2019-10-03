@@ -35,9 +35,14 @@ class RegexChecker:
 
 
 if __name__=="__main__":
-    emails = "お尋ねします。\n一部重複となり失礼します。田中です。\n有料WiFiを仕様していますが、２３時に接続線を抜かれてしまうので、その後はモバイルネットワークのモバイルデータに切り替えていますが、利用料金がかかるとすると、何分でどれ位の値段になりますか？東京都に住んでいます。電話番号は09022321212です。"
-    print(RegexChecker.email_regex())
-    print(re.findall(RegexChecker.email_regex(), emails))
-    print(RegexChecker.phone_regex())
-    print(re.findall(RegexChecker.phone_regex(), emails))
+    s = "お尋ねします。\n一部重複となり失礼します。田中です。\n有料WiFiを仕様していますが、２３時に接続線を抜かれてしまうので、その後はモバイルネットワークのモバイルデータに切り替えていますが、利用料金がかかるとすると、何分でどれ位の値段になりますか？東京都に住んでいます。電話番号は090-2232-1212です。"
+    phone = re.findall(RegexChecker.phone_regex(), s)
+    print(phone)
+    count = 0
+    for i in phone:
+        if i.__contains__("-"):
+            print("yes")
+            phone[count] = i.replace("-", "")
+        count += 1
+    print(phone)
 
