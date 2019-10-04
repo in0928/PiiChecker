@@ -45,8 +45,8 @@ class TextChecker:
                     count = end_index
 
                 number_end_index = TextChecker.number_ends_at(nlp_sentence[count+1:]) + count
-                print("number ends at: " + str(TextChecker.number_ends_at(nlp_sentence[count+1:])))
-                print(number_end_index)
+                # print("number ends at: " + str(TextChecker.number_ends_at(nlp_sentence[count+1:])))
+                # print(number_end_index)
                 # number entities exist
                 if number_end_index > count:
                     # location.append(nlp_sentence[end_index+1: number_end_index+1])
@@ -58,16 +58,25 @@ class TextChecker:
 
 
     @staticmethod
-    def number_ends_at(tokens):
+    def number_ends_at(nlp_sentence):
+        """
+        1-2-3, return last index + 1
+        一丁目二番地三号,　return last index + 1
+        数字がない、return count = 0
+        """
         count = 0
-        while count < len(tokens):
-            if tokens[count]._.pos_detail == "名詞,数詞,*,*":
+        while count < len(nlp_sentence):
+            if nlp_sentence[count]._.pos_detail == "名詞,数詞,*,*":
                 count += 2
                 continue
-            elif count > 0 and tokens[count-3]._.pos_detail == "補助記号,一般,*,*": #TODO: amazon 3000en
+            elif count > 3 and nlp_sentence[count-3]._.pos_detail == "補助記号,一般,*,*":
+                print("Found address ends with number")
                 return count-1
-            else:
+            elif count > 0 and nlp_sentence[count-1].text == "号":
+                print("Found address ends with 'Gou'")
                 return count
+            else:
+                return 0
         return count
 
     @staticmethod
@@ -89,23 +98,23 @@ class TextChecker:
 
 
 if __name__=="__main__":
-    s1 = "数字が4つで文字アドレスが複数の場合、東京都立川市港区上木葉下町5-1-3-1502だよ"
+    s1 = "数字が4つで文字アドレスが複数の場合、東京都立川市港区木葉下町5-1-3-1502だよ"
     s2 = "数字が4つで文字アドレスが1つの場合、六本木5-1-3-1122だよ"
     s3 = "数字が3つで文字アドレスが複数の場合、東京都大阪市浪速区なんば5-1-3だよ"
     s4 = "数字が3つで文字アドレスが1つの場合、六本木２ー３ー３だよ"
-    s5 = "数字が2つで文字アドレスが複数の場合、東京都立川市港区六本木１－３[だよ"
-    s6 = "数字が2つで文字アドレスが1つの場合、麻布十番３－３だよ"
     s7 = "数字が漢数字で文字アドレスが複数の場合、東京都立川市港区宿毛三丁目二番地五号だよ"
-    s8 = "数字が漢数字で文字アドレスが複数の場合、東京都立川市港区浜松町三丁目二番地だよ"
-    s9 = "数字が漢数字で文字アドレスが1つの場合、東京都立川市港区だよ"
+    s8 = "数字が漢数字で文字アドレスが複数の場合、東京都立川市港区浜松町三丁目二番地1号だよ"
+    s9 = "適当に浜松三方原店に来店"
 
-    test_list = [s1,s2,s3,s4,s5,s6,s7,s8,s9]
+    test_list = [s1,s8,s9]
     nlp = spacy.load('ja_ginza_nopn', disable=["tagger", "parser", "ner", "textcat"])
 
     for s in test_list:
         s = nlp(s)
         address = TextChecker.checkLocation(s)
         print(address)
+        for i in s:
+            print(i.text)
 
     # text = "お友達の紹介で、女子２人で三時のティータイムに利用しました。2人用のソファに並んでいただきま〜す v(^^)v なかよし（笑" \
     #        "最後に出された,モンブランのｹｰｷ。" \
@@ -113,12 +122,4 @@ if __name__=="__main__":
     #        "とってもＤｅｌｉｃｉｏｕｓで、サービスもGoodでしたAmazon😀" \
     #        "これで2,500円はとってもお得です☆" \
     #        "http://hogehoge.nantoka.blog/example/link.html"
-    #
-    # test = "Amazon3-3-31["
-    # nlp = spacy.load('ja_ginza_nopn', disable=["tagger", "parser", "ner", "textcat"])
-    # nlp_sentence = nlp(test)
-    # print(nlp_sentence[1:])
-    #
-    #
-    # print(TextChecker.number_ends_at(nlp_sentence[1:]))
 

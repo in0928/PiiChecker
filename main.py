@@ -1,4 +1,3 @@
-import spacy
 from toolBox import *
 from regexChecker import RegexChecker as rc
 from textChecker import TextChecker as tc
@@ -10,9 +9,9 @@ if __name__=="__main__":
     start_time = time.time()
 
     # pandas display option to show full df
-    pd.set_option('display.max_rows', 1000)
+    pd.set_option('display.max_rows', 1500)
     pd.set_option('display.max_columns', 500)
-    pd.set_option('display.max_colwidth', 200)
+    pd.set_option('display.max_colwidth', 150)
     pd.set_option('display.width', 1000)
 
     nlp = spacy.load('ja_ginza_nopn', disable=["tagger", "parser", "ner", "textcat"])
@@ -23,13 +22,15 @@ if __name__=="__main__":
     filtered_df = filtered_df(read_to_df(file, find_encoding(file)))
 
     raw_msgs = list(filtered_df["本文[msg.body]"])
+
     new_msgs = pre_process(raw_msgs)
+    # temp_df = pd.DataFrame(new_msgs)
+    # print(temp_df)
     email_regex = rc.email_regex()
     phone_regex = rc.phone_regex()
 
     result = []
     count = 0
-    error = {}
 
     docs = nlp.pipe(new_msgs)
     print("Entering loop")
@@ -45,11 +46,11 @@ if __name__=="__main__":
             match = True
 
         phone = re.findall(phone_regex, str(msg))
+        index = 0
         for p in phone:
-            index = 0
             p = str(p)
             if p.__contains__("-"):
-                print("Removing '-' for phone number")
+                print("Removing '-' for number: " + p)
                 p = p.replace("-", "")
                 phone[index] = p
             if len(p) < 10 or len(p) > 11:
@@ -57,35 +58,35 @@ if __name__=="__main__":
             index += 1
         if len(phone) > 0:
             print("Found phone at " + str(count) + ": " + ",".join([str(n) for n in phone]))
-            row["Phone"] = "".join([str(n) for n in phone])
+            row["Phone"] = ",".join([str(n) for n in phone])
             match = True
 
         name = tc.checkName(msg)
         if len(name) > 0:
             print("Found name at " + str(count) + ": " + ",".join([str(n) for n in name]))
-            row["Name"] = "".join([str(n) for n in name])
+            row["Name"] = ",".join([str(n) for n in name])
             match = True
 
         location_address = tc.checkLocation(msg)
         if len(location_address[0]) > 0:
             print("Found location at " + str(count) + ": " + ",".join([str(n) for n in location_address[0]]))
-            row["Location"] = "".join([str(n) for n in location_address[0]])
+            row["Location"] = ",".join([str(n) for n in location_address[0]])
             match = True
         if len(location_address[1]) > 0:
             print("Found address at " + str(count) + ": " + ",".join([str(n) for n in location_address[1]]))
-            row["Address"] = "".join([str(n) for n in location_address[1]])
+            row["Address"] = ",".join([str(n) for n in location_address[1]])
             match = True
-
 
         if match == True:
             row["RoomId"] = list(filtered_df["ルームID[msg.roomId]"])[count]
             row["MsgId"] = list(filtered_df["メッセージID[msg._id]"])[count]
-            row["Msg"] = raw_msgs[count]
+            row["Msg"] = list(filtered_df["本文[msg.body]"])[count]
             result.append(row)
         count += 1
 
     output_df = pd.DataFrame(result)
     print(output_df)
+    print()
 
     file_ok = False
 
@@ -99,7 +100,5 @@ if __name__=="__main__":
             file_ok = True
             write_to_csv(output_df, output_file + ".csv")
             write_to_xlsx(output_df, output_file + ".xlsx")
-    if error:
-        print(error)
 
     print("--- %s seconds ---" % (time.time() - start_time))

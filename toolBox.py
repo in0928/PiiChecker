@@ -30,7 +30,8 @@ def read_to_list(file, encode):
 
 
 def filtered_df(df):
-    new_df = df[~df["送信者ID[msg.userId]"].str.contains("dummy-", na=False)]
+    temp_df = df[~df["送信者ID[msg.userId]"].str.contains("dummy-", na=False)]
+    new_df = temp_df[~temp_df["送信者ID[msg.userId]"].str.startswith("u", na=False)]
     return new_df
 
 
@@ -42,9 +43,10 @@ def pre_process(text_list):
         normalized_text = neologdn.normalize(text)
         text_no_url = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', normalized_text)
         text_no_emoji = ''.join(['' if c in emoji.UNICODE_EMOJI else c for c in text_no_url])
-        tmp = re.sub(r'[!-/:-@[-`{-~]', r' ', text_no_emoji)
-        text_removed_symbol = re.sub(u'[■-♯]', ' ', tmp)
-        result.append(text_removed_symbol)
+        text_no_n = text_no_emoji.replace("\n", "")
+        # tmp = re.sub(r'[!-/:-@[-`{-~]', r' ', text_no_emoji)
+        # text_removed_symbol = re.sub(u'[■-♯]', ' ', tmp)
+        result.append(text_no_n)
     return result
 
 
@@ -54,13 +56,17 @@ def add_stop_words(customize_stop_words, nlp):
 
 
 def write_to_csv(df, output_filename):
-    df.to_csv(output_filename, sep="\t")
+    labels = ["Name","Location","Address","Phone","Email","RoomId","MsgId","Msg"]
+    df = df.reindex(labels, axis=1)
+    df.to_csv(output_filename, sep="\t", index=False)
     print("Successfully wrote df to csv file")
 
 
 def write_to_xlsx(df, output_filename):
+    labels = ["Name","Location","Address","Phone","Email","RoomId","MsgId","Msg"]
+    df = df.reindex(labels, axis=1)
     with pd.ExcelWriter(output_filename) as writer:
-        df.to_excel(writer, sheet_name=output_filename)
+        df.to_excel(writer, sheet_name=output_filename, index=False)
     print("Successfully wrote df to excel file")
 
 
