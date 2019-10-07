@@ -6,7 +6,8 @@ class RegexChecker:
 
     @staticmethod
     def email_regex():
-        pt = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
+        # First char must be a-zA-z0-9
+        pt = "[a-zA-Z0-9-]+[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
         email_regex = re.compile(pt)
         return email_regex
 
@@ -30,13 +31,13 @@ class RegexChecker:
         統一番号用電話番号	0570-DEF-XXX	10
         :return:
         """
-        pt = "0\d{1,4}[-+]?\d{1,4}[-+]?\d{4,5}"
+        pt = "^0\d{1,4}[-+]?\d{1,4}[-+]?\d{4,5}"
         phone_regex = re.compile(pt)
         return phone_regex
 
 
 if __name__=="__main__":
-    s = "お尋ねします。\n一部重複となり失礼します。田中です。゛％＃＆＊゛adrttgfsst@drtgfy.dgguruif\n有料WiFiを仕様していますが、２３時に接続線を抜かれてしまうので、その後はモバイルネットワークのモバイルデータに切り替えていますが、利用料金がかかるとすると、何分でどれ位の値段になりますか？東京都に住んでいます。電話番号は090-2232-1212です。"
+    s = "お尋ねします。\n一部重複となり失礼します。田中です。゛％＃＆＊゛.adrttgfsst@drtgfy.dgguruif\n有料WiFiを仕様していますが、２３時に接続線を抜かれてしまうので、その後はモバイルネットワークのモバイルデータに切り替えていますが、利用料金がかかるとすると、何分でどれ位の値段になりますか？東京都に住んでいます。電話番号は090-2232-1212です。"
     s = toolBox.pre_process([s])[0]
     print(s)
     phone = re.findall(RegexChecker.phone_regex(), s)

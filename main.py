@@ -4,8 +4,11 @@ from textChecker import TextChecker as tc
 import re
 import pandas as pd
 import time
+from pathlib import Path
 
 if __name__=="__main__":
+
+    data_folder = Path("data/")
     start_time = time.time()
 
     # pandas display option to show full df
@@ -18,7 +21,8 @@ if __name__=="__main__":
     stop_file = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\StopKey_pii.csv"
     add_stop_words(read_to_list(stop_file, find_encoding(stop_file)), nlp)
 
-    file = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\callcenter_data (201809).csv"
+    # file = "C:\\Users\\Ko.In\\Desktop\\PiiExtractionData\\callcenter_data (201809).csv"
+    file = data_folder / "email_test.csv"
     filtered_df = filtered_df(read_to_df(file, find_encoding(file)))
 
     raw_msgs = list(filtered_df["本文[msg.body]"])

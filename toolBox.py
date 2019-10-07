@@ -16,9 +16,9 @@ def find_encoding(file):
     return charenc
 
 
-def read_to_df(file, encode):
+def read_to_df(file, encode, header=None):
     with codecs.open(file, "r", encode, "ignore") as f:
-        df = pd.read_table(f, delimiter="\t")
+        df = pd.read_table(f, delimiter="\t", header=header)
     return df
 
 
@@ -40,8 +40,8 @@ def pre_process(text_list):
     for text in text_list:
         if not isinstance(text, str):
             text = str(text)
-        normalized_text = neologdn.normalize(text)
-        text_no_url = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', normalized_text)
+        # normalized_text = neologdn.normalize(text)
+        text_no_url = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', '', text)
         text_no_emoji = ''.join(['' if c in emoji.UNICODE_EMOJI else c for c in text_no_url])
         text_no_n = text_no_emoji.replace("\n", "")
         # tmp = re.sub(r'[!-/:-@[-`{-~]', r' ', text_no_emoji)
