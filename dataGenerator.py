@@ -1,11 +1,16 @@
+import codecs
+import os
 import random
 import string
 from pathlib import Path
 import pandas as pd
+import toolBox
 
 data_folder = Path("data/")
+name_data_folder = Path("data/name/")
+location_data_folder = Path("data/location/")
 email_quant = 20
-name_quant = 10
+name_quant = 500
 location_quant = 10
 phone_quant = 10
 data_quant = 100
@@ -39,22 +44,42 @@ def create_email():
     return emails
 
 
-def create_name():
-    firstName = []
-    lastName = []
-    fullname = []
-    firstName_file = data_folder / "M95_MEI.TXT"
-    lastName_file = data_folder / "M95_SEI.TXT"
-    with open(firstName_file, "r") as first_file:
-        first_list = first_file.readlines()
-    first_list = [line.rstrip('\n') for line in first_list]
+def create_name(header):
+    fullName_kanji_list = []
+    fullName_mix_list = []
+    firstName_file = name_data_folder / "M95_MEI.TXT"
+    lastName_file = name_data_folder / "M95_SEI.TXT"
 
-    with open(lastName_file, "r") as last_file:
-        last_list = last_file.readlines()
-    last_list = [line.rstrip('\n') for line in last_list]
+    with codecs.open(firstName_file, "r", toolBox.find_encoding(firstName_file), "ignore") as f:
+        first_df = pd.read_table(f, delimiter="\t", header=header)
+        firstName_kanji_list = list(first_df[1])
+        firstName_hira_list = list(first_df[0])
+
+    with codecs.open(lastName_file, "r", toolBox.find_encoding(lastName_file), "ignore") as f:
+        last_df = pd.read_table(f, delimiter="\t", header=header)
+        lastName_kanji_list = list(last_df[1])[:-1]
+        lastName_hira_list = list(last_df[0])[:-1]
+
+    i = 0
+    while i < name_quant:
+        lastName_kanji_index = random.randint(0, len(lastName_kanji_list) - 1)
+        firstName_kanji_index = random.randint(0, len(firstName_kanji_list) - 1)
+        firstName_hira_index = random.randint(0, len(firstName_hira_list) - 1)
+        kanji_name = "".join([str(lastName_kanji_list[lastName_kanji_index]), str(firstName_kanji_list[firstName_kanji_index])])
+        mix_name = "".join([str(lastName_kanji_list[lastName_kanji_index]), str(firstName_hira_list[firstName_hira_index])])
+        fullName_kanji_list.append(kanji_name)
+        fullName_mix_list.append(mix_name)
+        i += 1
+    return fullName_kanji_list, fullName_mix_list, lastName_kanji_list, lastName_hira_list, firstName_kanji_list, firstName_hira_list
 
 def create_location():
-    pass
+    address = []
+
+    for file in os.listdir(location_data_folder):
+        with codecs.open(file, "r", toolBox.find_encoding(file), "ignore") as f:
+            df = pd.read_table(f, delimiter="\t", header=None)
+            firstName_kanji_list = list(first_df[1])
+    return address
 
 def create_phone_number():
     hyphen = "-"
@@ -86,7 +111,7 @@ def add_text(some_list):
 
 def write_to_csv_for_test(list_of_rows, filename):
     df = pd.DataFrame(list_of_rows)
-    print(df)
+    # print(df)
 
     # df = df.reindex(label, axis=1)
     df.to_csv(filename, sep="\t", index=False, header=None)
@@ -94,8 +119,4 @@ def write_to_csv_for_test(list_of_rows, filename):
 
 
 if __name__ == "__main__":
-    # print(create_email())
-    # print(create_phone_number())
-    emails = create_email()
-    modified_emails = add_text(emails)
-    print(modified_emails)
+    print(create_location())

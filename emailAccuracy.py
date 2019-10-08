@@ -5,7 +5,6 @@ from regexChecker import RegexChecker as rc
 from toolBox import *
 
 if __name__=="__main__":
-    start_time = time.time()
     data_folder = Path("data/")
     file = data_folder / "email_test.csv"
 

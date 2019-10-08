@@ -17,12 +17,18 @@ class TextChecker:
             if nlp_sentence[count]._.pos_detail == "名詞,固有名詞,人名,姓":
                 # to detect full-name
                 if count < len(nlp_sentence)-1 and nlp_sentence[count+1]._.pos_detail == "名詞,固有名詞,人名,名":
-                    name.append((nlp_sentence[count], nlp_sentence[count+1]))
+                    fullName = "".join([str(nlp_sentence[count]), str(nlp_sentence[count+1])])
+                    name.append(fullName)
+                    print("Found fullName: " + fullName)
                     count += 1
                 else:
-                    name.append(nlp_sentence[count])
+                    lastName = str(nlp_sentence[count])
+                    name.append(lastName)
+                    print("Found lastName: " + lastName)
             elif nlp_sentence[count]._.pos_detail == "名詞,固有名詞,人名,名":
+                firstName = str(nlp_sentence[count])
                 name.append(nlp_sentence[count])
+                print("Found firstName: " + firstName)
             count += 1
         return name
 
@@ -105,13 +111,15 @@ if __name__=="__main__":
     s7 = "数字が漢数字で文字アドレスが複数の場合、東京都立川市港区宿毛三丁目二番地五号だよ"
     s8 = "数字が漢数字で文字アドレスが複数の場合、東京都立川市港区浜松町三丁目二番地1号だよ"
     s9 = "適当に浜松三方原店に来店"
+    n1 = "会野谷凝然"
 
     test_list = [s1,s8,s9]
+    name_list = [n1]
     nlp = spacy.load('ja_ginza_nopn', disable=["tagger", "parser", "ner", "textcat"])
 
-    for s in test_list:
+    for s in name_list:
         s = nlp(s)
-        address = TextChecker.checkLocation(s)
+        address = TextChecker.checkName(s)
         print(address)
         for i in s:
             print(i.text)
